@@ -1,0 +1,26 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vllm-entrypoint
+data:
+  entrypoint.sh: |
+    #!/bin/bash
+
+    echo "CONTAINER_LLM_DIR: ${CONTAINER_LLM_DIR}"
+    echo "TENSOR_PARALLEL_SIZE: ${TENSOR_PARALLEL_SIZE}"
+    echo "D_TYPE: ${D_TYPE}"
+    echo "QUANTIZATION: ${QUANTIZATION}"
+    echo "VLLM_USE_FLASH_ATTN_TRITON: ${VLLM_USE_FLASH_ATTN_TRITON}"
+
+    # Download the model
+    huggingface-cli download meta-llama/Meta-Llama-3-8B-Instruct --local-dir ${CONTAINER_LLM_DIR} --token ${HF_TOKEN}
+
+    # 8B
+    CMD="python -m vllm.entrypoints.openai.api_server --model ${CONTAINER_LLM_DIR} --tensor-parallel-size ${TENSOR_PARALLEL_SIZE} --dtype ${D_TYPE}"
+
+    if [[ -n "${QUANTIZATION}" ]]; then
+      CMD="${CMD} --quantization ${QUANTIZATION}"
+    fi
+
+    exec $CMD

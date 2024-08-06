@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vllm-env
+data:
+  CONTAINER_LLM_DIR: /vllm-workspace/Llama-3-8B-Instruct
+  D_TYPE: bfloat16
+  HOST_MODEL_DIR: ~/llamas/Llama-3-8B-Instruct
+  QUANTIZATION: ""
+  TENSOR_PARALLEL_SIZE: "1"
+  VLLM_USE_FLASH_ATTN_TRITON: "0"

@@ -1,0 +1,74 @@
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: vllm-build
+spec:
+  failedBuildsHistoryLimit: 5
+  nodeSelector:
+    kubernetes.io/hostname: os-wf2-07.cluster1.sandbox284.opentlc.com
+  output:
+    to:
+      kind: ImageStreamTag
+      name: vllm:latest
+  runPolicy: Serial
+  source:
+    git:
+      uri: https://github.com/ROCm/vllm
+    type: Git
+  strategy:
+    dockerStrategy:
+      buildArgs:
+        - name: BASE_IMAGE
+          value: rocm/pytorch:rocm6.1.2_ubuntu20.04_py3.9_pytorch_staging
+        - name: COMMON_WORKDIR
+          value: /app
+        - name: BUILD_HIPBLASLT
+          value: "1"
+        - name: BUILD_RCCL
+          value: "1"
+        - name: BUILD_FA
+          value: "1"
+        - name: BUILD_CUPY
+          value: "0"
+        - name: BUILD_TRITON
+          value: "1"
+        - name: REMOTE_VLLM
+          value: "0"
+        - name: CONTAINER_LLM_DIR
+          value: /vllm-workspace/Llama-3-8B-Instruct
+        - name: PYTORCH_ROCM_ARCH
+          value: "gfx90a;gfx942"
+        - name: HIPBLASLT_BRANCH
+          value: 6f65c6e
+        - name: RCCL_BRANCH
+          value: 73221b4
+        - name: FA_BRANCH
+          value: ae7928c
+        - name: FA_REPO
+          value: "https://github.com/ROCm/flash-attention.git"
+        - name: CUPY_BRANCH
+          value: hipgraph_enablement
+        - name: TRITON_BRANCH
+          value: 6ddb79b
+        - name: TRITON_REPO
+          value: "https://github.com/OpenAI/triton.git"
+        - name: VLLM_REPO
+          value: "https://github.com/ROCm/vllm.git"
+        - name: VLLM_BRANCH
+          value: main
+      dockerfilePath: Dockerfile.rocm
+      env:
+        - name: HF_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: HF_TOKEN
+              name: vllm-env
+        - name: BUILD_LOGLEVEL
+          value: "5"
+        - name: MAX_JOBS
+          value: "128"
+        - name: PYTORCH_ROCM_ARCH
+          value: "gfx90a;gfx942"
+    type: Docker
+  successfulBuildsHistoryLimit: 5
