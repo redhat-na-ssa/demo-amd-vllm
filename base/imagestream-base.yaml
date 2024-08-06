@@ -1,0 +1,17 @@
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: rocm-pytorch
+  namespace: sandbox
+spec:
+  lookupPolicy:
+    local: true
+  tags:
+    - name: base
+      importPolicy:
+        importMode: Legacy
+        scheduled: true
+      from:
+        kind: DockerImage
+        name: docker.io/rocm/pytorch:rocm6.1.2_ubuntu20.04_py3.9_pytorch_staging

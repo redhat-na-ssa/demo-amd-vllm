@@ -3,6 +3,8 @@ apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
   name: vllm-build
+  annotations:
+    alpha.image.policy.openshift.io/resolve-names: "*"
 spec:
   failedBuildsHistoryLimit: 5
   nodeSelector:
@@ -20,7 +22,7 @@ spec:
     dockerStrategy:
       buildArgs:
         - name: BASE_IMAGE
-          value: rocm/pytorch:rocm6.1.2_ubuntu20.04_py3.9_pytorch_staging
+          value: rocm-pytorch:base
         - name: COMMON_WORKDIR
           value: /app
         - name: BUILD_HIPBLASLT
