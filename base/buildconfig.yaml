@@ -8,7 +8,7 @@ metadata:
 spec:
   failedBuildsHistoryLimit: 5
   nodeSelector:
-    kubernetes.io/hostname: os-wf2-07.cluster1.sandbox284.opentlc.com
+    kubernetes.io/hostname: GPU_NODE
   output:
     to:
       kind: ImageStreamTag
@@ -22,7 +22,7 @@ spec:
     dockerStrategy:
       buildArgs:
         - name: BASE_IMAGE
-          value: rocm-pytorch:base
+          value: image-registry.openshift-image-registry.svc:5000/NAMESPACE/rocm-pytorch:base
         - name: COMMON_WORKDIR
           value: /app
         - name: BUILD_HIPBLASLT
