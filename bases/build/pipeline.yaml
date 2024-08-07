@@ -1,0 +1,246 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: parallel-build
+spec:
+  workspaces:
+    - name: shared-workspace
+  params:
+    - name: git-url
+      type: string
+      description: url of the git repo for the dockerfiles
+    - name: git-revision
+      type: string
+      description: revision to be used from repo of the code for deployment
+      default: main
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: git-clone
+          - name: namespace
+            value: openshift-pipelines
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: URL
+          value: $(params.git-url)
+        - name: SUBDIRECTORY
+          value: ""
+        - name: DELETE_EXISTING
+          value: "true"
+        - name: REVISION
+          value: $(params.git-revision)
+    - name: build-base
+      taskRef:
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: buildah
+          - name: namespace
+            value: openshift-pipelines
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: TLSVERIFY
+          value: "false"
+        - name: IMAGE
+          value: image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
+        - name: DOCKERFILE
+          value: build/Dockerfile.base
+      runAfter:
+        - fetch-repository
+    - name: build-hipblaslt
+      taskRef:
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: buildah
+          - name: namespace
+            value: openshift-pipelines
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: TLSVERIFY
+          value: "false"
+        - name: IMAGE
+          value: image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-hipblaslt:latest
+        - name: DOCKERFILE
+          value: build/Dockerfile.hipblaslt
+        - name: BUILD_ARGS
+          value:
+            - BASE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
+      runAfter:
+        - build-base
+    - name: build-rccl
+      taskRef:
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: buildah
+          - name: namespace
+            value: openshift-pipelines
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: TLSVERIFY
+          value: "false"
+        - name: IMAGE
+          value: image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-rccl:latest
+        - name: DOCKERFILE
+          value: build/Dockerfile.rccl
+        - name: BUILD_ARGS
+          value:
+            - BASE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
+      runAfter:
+        - build-base
+    - name: build-flash-attn
+      taskRef:
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: buildah
+          - name: namespace
+            value: openshift-pipelines
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: TLSVERIFY
+          value: "false"
+        - name: IMAGE
+          value: image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-flash-attn:latest
+        - name: DOCKERFILE
+          value: build/Dockerfile.flash_attn
+        - name: BUILD_ARGS
+          value:
+            - BASE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
+      runAfter:
+        - build-base
+    - name: build-triton
+      taskRef:
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: buildah
+          - name: namespace
+            value: openshift-pipelines
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: TLSVERIFY
+          value: "false"
+        - name: IMAGE
+          value: image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-triton:latest
+        - name: DOCKERFILE
+          value: build/Dockerfile.triton
+        - name: BUILD_ARGS
+          value:
+            - BASE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
+      runAfter:
+        - build-base
+    - name: build-amdsmi
+      taskRef:
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: buildah
+          - name: namespace
+            value: openshift-pipelines
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: TLSVERIFY
+          value: "false"
+        - name: IMAGE
+          value: image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-amdsmi:latest
+        - name: DOCKERFILE
+          value: build/Dockerfile.amdsmi
+        - name: BUILD_ARGS
+          value:
+            - BASE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
+      runAfter:
+        - build-base
+    - name: build-vllm
+      taskRef:
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: buildah
+          - name: namespace
+            value: openshift-pipelines
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: TLSVERIFY
+          value: "false"
+        - name: IMAGE
+          value: image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-vllm:latest
+        - name: DOCKERFILE
+          value: build/Dockerfile.vllm
+        - name: BUILD_ARGS
+          value:
+            - BASE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
+            - HIPBLASLT_IMAGE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-hipblaslt:latest
+      runAfter:
+        - build-hipblaslt
+    - name: build-runtime
+      taskRef:
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: buildah
+          - name: namespace
+            value: openshift-pipelines
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: TLSVERIFY
+          value: "false"
+        - name: IMAGE
+          value: image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/vllm:latest
+        - name: DOCKERFILE
+          value: build/Dockerfile
+        - name: BUILD_ARGS
+          value:
+            - BASE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
+            - HIPBLASLT_IMAGE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-hipblaslt:latest
+            - RCCL_IMAGE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-rccl:latest
+            - FLASH_ATTN_IMAGE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-flash-attn:latest
+            - TRITON_IMAGE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-triton:latest
+            - AMDSMI_IMAGE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-amdsmi:latest
+            - VLLM_IMAGE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-vllm:latest
+      runAfter:
+        - build-rccl
+        - build-flash-attn
+        - build-triton
+        - build-amdsmi
+        - build-vllm

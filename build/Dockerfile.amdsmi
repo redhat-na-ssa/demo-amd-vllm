@@ -1,0 +1,6 @@
+ARG BASE=image-registry.openshift-image-registry.svc:5000/NAMESPACE/base:latest
+FROM ${BASE} as build
+RUN cd /opt/rocm/share/amd_smi \
+  && pip wheel . --wheel-dir=dist
+FROM scratch
+COPY --from=build /opt/rocm/share/amd_smi/dist/*.whl /

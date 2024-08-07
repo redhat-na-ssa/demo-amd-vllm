@@ -1,0 +1,28 @@
+ARG BASE=image-registry.openshift-image-registry.svc:5000/NAMESPACE/base:latest
+ARG HIPBLASLT_IMAGE=image-registry.openshift-image-registry.svc:5000/NAMESPACE/export-hipblaslt:latest
+FROM ${HIPBLASLT_IMAGE} as export_hipblaslt
+
+FROM ${BASE} as build
+ARG VLLM_REPO="https://github.com/ROCm/vllm.git"
+ARG VLLM_BRANCH="main"
+RUN --mount=type=bind,from=export_hipblaslt,src=/,target=/install \
+  git clone --depth 1 --reference "${VLLM_BRANCH}" "${VLLM_REPO}" \
+  && if ls /install/*.deb; then \
+  apt-get purge -y hipblaslt \
+  && dpkg -i /install/*.deb \
+  && sed -i 's/, hipblaslt-dev \(.*\), hipcub-dev/, hipcub-dev/g' /var/lib/dpkg/status \
+  && sed -i 's/, hipblaslt \(.*\), hipfft/, hipfft/g' /var/lib/dpkg/status; \
+  fi \
+  && cd vllm \
+  && python3 setup.py clean --all && python3 setup.py bdist_wheel --dist-dir=dist \
+  && cd gradlib \
+  && python3 setup.py clean --all && python3 setup.py bdist_wheel --dist-dir=dist
+FROM scratch
+COPY --from=build /app/vllm/dist/*.whl /
+COPY --from=build /app/vllm/gradlib/dist/*.whl /
+COPY --from=build /app/vllm/rocm_patch /rocm_patch
+COPY --from=build /app/vllm/requirements*.txt /
+COPY --from=build /app/vllm/benchmarks /benchmarks
+COPY --from=build /app/vllm/tests /tests
+COPY --from=build /app/vllm/examples /examples
+COPY --from=build /app/vllm/.buildkite /.buildkite

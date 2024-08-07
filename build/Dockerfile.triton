@@ -1,0 +1,9 @@
+ARG BASE=image-registry.openshift-image-registry.svc:5000/NAMESPACE/base:latest
+FROM ${BASE} as build
+ARG TRITON_BRANCH="6ddb79b"
+ARG TRITON_REPO="https://github.com/OpenAI/triton.git"
+RUN git clone --depth 1 --reference "${TRITON_BRANCH}" "${TRITON_REPO}" \
+  && cd triton/python \
+  && python3 setup.py bdist_wheel --dist-dir=dist
+FROM scratch
+COPY --from=build /app/triton/python/dist/*.whl /

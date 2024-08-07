@@ -3,7 +3,6 @@ apiVersion: image.openshift.io/v1
 kind: ImageStream
 metadata:
   name: rocm-pytorch
-  namespace: sandbox
 spec:
   lookupPolicy:
     local: true
