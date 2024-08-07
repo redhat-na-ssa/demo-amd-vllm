@@ -18,6 +18,7 @@ spec:
     type: Git
   strategy:
     dockerStrategy:
+      noCache: true
       buildArgs:
         - name: BASE_IMAGE
           value: image-registry.openshift-image-registry.svc:5000/NAMESPACE/rocm-pytorch:base
