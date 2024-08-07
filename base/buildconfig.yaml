@@ -3,8 +3,6 @@ apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
   name: vllm-build
-  annotations:
-    alpha.image.policy.openshift.io/resolve-names: "*"
 spec:
   failedBuildsHistoryLimit: 5
   nodeSelector:
