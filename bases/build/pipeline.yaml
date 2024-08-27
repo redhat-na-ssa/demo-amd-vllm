@@ -25,6 +25,7 @@ spec:
             value: git-clone
           - name: namespace
             value: openshift-pipelines
+      timeout: 10m
       workspaces:
         - name: output
           workspace: shared-workspace
@@ -47,6 +48,7 @@ spec:
             value: buildah
           - name: namespace
             value: openshift-pipelines
+      timeout: 1h
       workspaces:
         - name: source
           workspace: shared-workspace
