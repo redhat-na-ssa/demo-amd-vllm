@@ -2,10 +2,12 @@ ARG BASE=image-registry.openshift-image-registry.svc:5000/NAMESPACE/base:latest
 FROM ${BASE} as build
 ARG TRITON_BRANCH="6ddb79b"
 ARG TRITON_REPO="https://github.com/OpenAI/triton.git"
+# NOTE: The download URL is patched due to firewall constraints in our build environment
 RUN git clone "${TRITON_REPO}" \
   && cd triton \
   && git reset --hard "${TRITON_BRANCH}" \
   && cd python \
+  && sed -i 's/anaconda\.org/s3.jharmison.com\/public/g' setup.py \
   && python3 setup.py bdist_wheel --dist-dir=dist
 FROM scratch
 COPY --from=build /app/triton/python/dist/*.whl /
