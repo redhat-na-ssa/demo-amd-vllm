@@ -79,9 +79,8 @@ spec:
           value: image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-hipblaslt:latest
         - name: DOCKERFILE
           value: build/Dockerfile.hipblaslt
-        - name: BUILD_ARGS
-          value:
-            - BASE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
+        - name: BUILD_EXTRA_ARGS
+          value: --build-arg=BASE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
       runAfter:
         - build-base
     - name: build-rccl
@@ -104,9 +103,8 @@ spec:
           value: image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-rccl:latest
         - name: DOCKERFILE
           value: build/Dockerfile.rccl
-        - name: BUILD_ARGS
-          value:
-            - BASE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
+        - name: BUILD_EXTRA_ARGS
+          value: --build-arg=BASE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
       runAfter:
         - build-base
     - name: build-flash-attn
@@ -129,9 +127,8 @@ spec:
           value: image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-flash-attn:latest
         - name: DOCKERFILE
           value: build/Dockerfile.flash_attn
-        - name: BUILD_ARGS
-          value:
-            - BASE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
+        - name: BUILD_EXTRA_ARGS
+          value: --build-arg=BASE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
       runAfter:
         - build-base
     - name: build-triton
@@ -154,9 +151,8 @@ spec:
           value: image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-triton:latest
         - name: DOCKERFILE
           value: build/Dockerfile.triton
-        - name: BUILD_ARGS
-          value:
-            - BASE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
+        - name: BUILD_EXTRA_ARGS
+          value: --build-arg=BASE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
       runAfter:
         - build-base
     - name: build-amdsmi
@@ -179,9 +175,8 @@ spec:
           value: image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-amdsmi:latest
         - name: DOCKERFILE
           value: build/Dockerfile.amdsmi
-        - name: BUILD_ARGS
-          value:
-            - BASE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
+        - name: BUILD_EXTRA_ARGS
+          value: --build-arg=BASE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
       runAfter:
         - build-base
     - name: build-vllm
@@ -204,10 +199,10 @@ spec:
           value: image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-vllm:latest
         - name: DOCKERFILE
           value: build/Dockerfile.vllm
-        - name: BUILD_ARGS
-          value:
-            - BASE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
-            - HIPBLASLT_IMAGE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-hipblaslt:latest
+        - name: BUILD_EXTRA_ARGS
+          value: >-
+            --build-arg=BASE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
+            --build-arg=HIPBLASLT_IMAGE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-hipblaslt:latest
       runAfter:
         - build-hipblaslt
     - name: build-runtime
@@ -230,15 +225,15 @@ spec:
           value: image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/vllm:latest
         - name: DOCKERFILE
           value: build/Dockerfile
-        - name: BUILD_ARGS
-          value:
-            - BASE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
-            - HIPBLASLT_IMAGE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-hipblaslt:latest
-            - RCCL_IMAGE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-rccl:latest
-            - FLASH_ATTN_IMAGE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-flash-attn:latest
-            - TRITON_IMAGE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-triton:latest
-            - AMDSMI_IMAGE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-amdsmi:latest
-            - VLLM_IMAGE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-vllm:latest
+        - name: BUILD_EXTRA_ARGS
+          value: >-
+            --build-arg=BASE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/base:latest
+            --build-arg=HIPBLASLT_IMAGE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-hipblaslt:latest
+            --build-arg=RCCL_IMAGE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-rccl:latest
+            --build-arg=FLASH_ATTN_IMAGE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-flash-attn:latest
+            --build-arg=TRITON_IMAGE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-triton:latest
+            --build-arg=AMDSMI_IMAGE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-amdsmi:latest
+            --build-arg=VLLM_IMAGE=image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/export-vllm:latest
       runAfter:
         - build-rccl
         - build-flash-attn
