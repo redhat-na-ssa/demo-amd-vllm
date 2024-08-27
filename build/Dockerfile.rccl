@@ -1,8 +1,9 @@
 ARG BASE=image-registry.openshift-image-registry.svc:5000/NAMESPACE/base:latest
 FROM ${BASE} AS build
 ARG RCCL_BRANCH="73221b4"
-RUN git clone --depth 1 --reference "${RCCL_BRANCH}" https://github.com/ROCm/rccl \
+RUN git clone https://github.com/ROCm/rccl \
   && cd rccl \
+  && git reset --hard "${RCCL_BRANCH}" \
   && ./install.sh -p --amdgpu_targets "${PYTORCH_ROCM_ARCH}"
 FROM scratch
 COPY --from=build /app/rccl/build/release/*.deb /

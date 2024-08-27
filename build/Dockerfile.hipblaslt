@@ -1,8 +1,9 @@
 ARG BASE=image-registry.openshift-image-registry.svc:5000/NAMESPACE/base:latest
 FROM ${BASE} as build
 ARG HIPBLASLT_BRANCH="6f65c6e"
-RUN git clone --depth 1 --reference "${HIPBLASLT_BRANCH}" https://github.com/ROCm/hipBLASLt \
+RUN git clone https://github.com/ROCm/hipBLASLt \
   && cd hipBLASLt \
+  && git reset --hard "${HIPBLASLT_BRANCH}" \
   && SCCACHE_IDLE_TIMEOUT=1800 ./install.sh --architecture ${PYTORCH_ROCM_ARCH} \
   && cd build/release \
   && make package

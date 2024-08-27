@@ -2,8 +2,10 @@ ARG BASE=image-registry.openshift-image-registry.svc:5000/NAMESPACE/base:latest
 FROM ${BASE} as build
 ARG FA_BRANCH="ae7928c"
 ARG FA_REPO="https://github.com/ROCm/flash-attention.git"
-RUN git clone --depth 1 --reference "${FA_BRANCH}" --recurse-submodules --shallow-submodules "${FA_REPO}"" \
+RUN git clone --recurse-submodules "${FA_REPO}" \
   && cd flash-attention \
+  && git reset --hard "${FA_BRANCH}" \
+  && git submodule update \
   && GPU_ARCHS=${PYTORCH_ROCM_ARCH} python3 setup.py bdist_wheel --dist-dir=dist
 FROM scratch
 COPY --from=build /app/flash-attention/dist/*.whl /
