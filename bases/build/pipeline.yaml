@@ -69,6 +69,7 @@ spec:
             value: buildah
           - name: namespace
             value: openshift-pipelines
+      timeout: 2h
       workspaces:
         - name: source
           workspace: shared-workspace
@@ -93,6 +94,7 @@ spec:
             value: buildah
           - name: namespace
             value: openshift-pipelines
+      timeout: 2h
       workspaces:
         - name: source
           workspace: shared-workspace
@@ -117,6 +119,7 @@ spec:
             value: buildah
           - name: namespace
             value: openshift-pipelines
+      timeout: 2h
       workspaces:
         - name: source
           workspace: shared-workspace
@@ -141,6 +144,7 @@ spec:
             value: buildah
           - name: namespace
             value: openshift-pipelines
+      timeout: 2h
       workspaces:
         - name: source
           workspace: shared-workspace
@@ -165,6 +169,7 @@ spec:
             value: buildah
           - name: namespace
             value: openshift-pipelines
+      timeout: 2h
       workspaces:
         - name: source
           workspace: shared-workspace
@@ -189,6 +194,7 @@ spec:
             value: buildah
           - name: namespace
             value: openshift-pipelines
+      timeout: 2h
       workspaces:
         - name: source
           workspace: shared-workspace
@@ -215,6 +221,7 @@ spec:
             value: buildah
           - name: namespace
             value: openshift-pipelines
+      timeout: 2h
       workspaces:
         - name: source
           workspace: shared-workspace
