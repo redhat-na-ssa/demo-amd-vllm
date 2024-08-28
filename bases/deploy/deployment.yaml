@@ -92,6 +92,8 @@ spec:
               name: cache
             - mountPath: /vllm-workspace
               name: modeldir
+            - mountPath: /.triton
+              name: triton-cache
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       securityContext:
@@ -113,4 +115,7 @@ spec:
         - name: cache
           emptyDir: {}
         - name: modeldir
+          persistentVolumeClaim:
+            claimname: vllm-workspace
+        - name: triton-cache
           emptyDir: {}
