@@ -80,6 +80,8 @@ spec:
               name: dev-shm
             - mountPath: /.cache
               name: cache
+            - mountPath: /vllm-workspace
+              name: modeldir
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       securityContext:
@@ -99,4 +101,6 @@ spec:
             medium: Memory
             sizeLimit: 12Gi
         - name: cache
+          emptyDir: {}
+        - name: modeldir
           emptyDir: {}
