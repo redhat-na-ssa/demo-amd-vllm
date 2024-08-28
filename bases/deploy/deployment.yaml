@@ -116,6 +116,6 @@ spec:
           emptyDir: {}
         - name: modeldir
           persistentVolumeClaim:
-            claimname: vllm-workspace
+            claimName: vllm-workspace
         - name: triton-cache
           emptyDir: {}
