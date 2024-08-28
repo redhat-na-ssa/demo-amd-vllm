@@ -94,6 +94,8 @@ spec:
               name: modeldir
             - mountPath: /.triton
               name: triton-cache
+            - mountPath: /.config
+              name: vllm-config
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       securityContext:
@@ -118,4 +120,6 @@ spec:
           persistentVolumeClaim:
             claimName: vllm-workspace
         - name: triton-cache
+          emptyDir: {}
+        - name: vllm-config
           emptyDir: {}
