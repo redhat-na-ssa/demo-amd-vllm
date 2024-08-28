@@ -3,8 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: vllm-amd-demo
-  annotations:
-    alpha.image.policy.openshift.io/resolve-names: "*"
 spec:
   replicas: 1
   revisionHistoryLimit: 1
@@ -21,6 +19,8 @@ spec:
     metadata:
       labels:
         app: vllm-inference
+      annotations:
+        alpha.image.policy.openshift.io/resolve-names: "*"
     spec:
       containers:
         - name: vllm
