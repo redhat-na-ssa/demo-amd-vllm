@@ -78,6 +78,8 @@ spec:
               readOnly: true
             - mountPath: /dev/shm
               name: dev-shm
+            - mountPath: /.cache
+              name: cache
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       securityContext:
@@ -96,3 +98,5 @@ spec:
           emptyDir:
             medium: Memory
             sizeLimit: 12Gi
+        - name: cache
+          emptyDir: {}
